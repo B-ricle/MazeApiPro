@@ -1,19 +1,21 @@
+
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class MazeRenderer extends Canvas {
+
     private GraphicsContext gc;
     private final int visibilityRadius = 2; // player can see 2 cells in every direction
 
-    public MazeRenderer(int width, int height, int rows, int cols){
+    public MazeRenderer(int width, int height, int rows, int cols) {
         super(width, height);
         gc = this.getGraphicsContext2D();
     }
 
     // Render the maze with fog-of-war and player
     // Accepts explored array from MazeApp
-    public void render(int[][] maze, int playerRow, int playerCol, boolean[][] explored){
+    public void render(int[][] maze, int playerRow, int playerCol, boolean[][] explored) {
         int rows = maze.length;
         int cols = maze[0].length;
         double cellWidth = getWidth() / cols;

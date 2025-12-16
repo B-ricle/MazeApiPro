@@ -58,8 +58,8 @@ public class MazeApp extends Application {
         Optional<String> result = dialog.showAndWait();
         String playerName = result.orElse("Player1");
 
-        // Assign player ID for simplicity (could be improved for multiple profiles)
-        playerID = playerName.hashCode(); // simple unique ID
+        // Assign player ID for simplicity
+        playerID = playerName.hashCode();
 
         // Load previous player data from file (if it exists)
         dataManager.loadFromFile("PlayerDataStorage.txt");
@@ -70,7 +70,6 @@ public class MazeApp extends Application {
             score = existingPlayer.getScore();
             startTime = System.currentTimeMillis() - (existingPlayer.getTime() * 1000);
         } else {
-            // If no saved data, start a new timer
             startTime = System.currentTimeMillis();
         }
 
@@ -87,22 +86,26 @@ public class MazeApp extends Application {
 
             // --- PAUSE MENU ---
             if (code == KeyCode.ESCAPE) {
-                paused = !paused; // toggle pause state
+                paused = !paused;
             }
 
             if (!paused) {
-                // Allow movement using arrow keys or WASD
+                int dRow = 0, dCol = 0;
                 if (code == KeyCode.UP || code == KeyCode.W) {
-                    movePlayer(-1, 0);
+                    dRow = -1;
                 }
                 if (code == KeyCode.DOWN || code == KeyCode.S) {
-                    movePlayer(1, 0);
+                    dRow = 1;
                 }
                 if (code == KeyCode.LEFT || code == KeyCode.A) {
-                    movePlayer(0, -1);
+                    dCol = -1;
                 }
                 if (code == KeyCode.RIGHT || code == KeyCode.D) {
-                    movePlayer(0, 1);
+                    dCol = 1;
+                }
+
+                if (dRow != 0 || dCol != 0) {
+                    movePlayer(dRow, dCol);
                 }
             }
         });
@@ -129,25 +132,38 @@ public class MazeApp extends Application {
     private void startNewLevel(String playerName) {
 
         // Maze size increases as the level increases
-        // Ensure minimum size of 7x7 to prevent tiny isolated areas
-        int newSize = Math.max(7, 5 + level * 2);
+        int newSize = Math.max(9, 7 + level * 2); // slightly larger to reduce stuck player
 
         // Generate a new random maze
         loader = new MazeLoader(newSize, newSize);
         loader.generateRandomMaze();
         maze = loader.getMaze();
 
+        // --- ENSURE A SMALL CLEAR AREA AROUND START ---
+        // This prevents the player from getting stuck immediately
+        int startRow = 1;
+        int startCol = 1;
+        for (int r = startRow - 1; r <= startRow + 1; r++) {
+            for (int c = startCol - 1; c <= startCol + 1; c++) {
+                if (r > 0 && r < maze.length - 1 && c > 0 && c < maze[0].length - 1) {
+                    maze[r][c] = 0; // make walkable
+                }
+            }
+        }
+
         // Reset fog-of-war tracking for the new maze
         explored = new boolean[maze.length][maze[0].length];
 
         // Create the player if this is the first level
-        // Otherwise, reset the player to the starting position
         if (player == null) {
-            player = new Player(playerName, 1, 1, 1);
+            player = new Player(playerName, playerID, startRow, startCol);
         } else {
-            player.setPosition(1, 1);
+            player.setPosition(startRow, startCol);
             player.setName(playerName);
         }
+
+        // Mark starting position as explored
+        explored[startRow][startCol] = true;
 
         // Create a new renderer sized to the maze
         renderer = new MazeRenderer(
@@ -183,8 +199,6 @@ public class MazeApp extends Application {
     // Checks whether the player has reached the exit tile
     private void checkExit() {
         int[] pos = player.getPosition();
-
-        // Exit is located near the bottom-right of the maze
         int exitRow = maze.length - 2;
         int exitCol = maze[0].length - 2;
 
@@ -216,7 +230,7 @@ public class MazeApp extends Application {
         int[] pos = player.getPosition();
 
         // Render the maze with fog-of-war
-        renderer.render(maze, pos[0], pos[1], explored); // pass explored tiles
+        renderer.render(maze, pos[0], pos[1], explored);
 
         GraphicsContext gc = renderer.getGraphicsContext2D();
 
