@@ -26,6 +26,10 @@ public class Player {
     public int getId(){
         return id;
     }
+    // Allow updating the player's name
+    public void setName(String newName) {
+        this.name = newName;
+    }
     //This will move the character to a specified coloumn
     public void move(int dRow, int dCol){
         row += dRow;

@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run MazeApp",
+            "request": "launch",
+            "mainClass": "MazeApp",
+            "runtimeExecutable": "C:\\Users\\bnhen\\.jdk\\javase-21.0.6+7\\bin\\java.exe",
+            "vmArgs": "--module-path \"C:\\Users\\bnhen\\OneDrive - Towson University\\MazeApiPro\\javafx-sdk-21.0.8\\lib\" --add-modules javafx.controls,javafx.fxml",
+            "preLaunchTask": "Compile MazeApp (JavaFX 21)",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
+}
