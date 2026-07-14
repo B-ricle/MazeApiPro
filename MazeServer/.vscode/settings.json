@@ -1,8 +1,8 @@
 {
-    "java.home": "C:\\Program Files\\Java\\jdk-25",
     "java.project.sourcePaths": [
-        ".",
-        "MazeServer"
+        "."
     ],
-    "java.project.referencedLibraries": []
+    "java.project.referencedLibraries": [
+        "javafx-sdk-21.0.8/lib/*.jar"
+    ]
 }
